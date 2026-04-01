@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSV Viewer (Grist, GitHub Pages)</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #f6f7f9;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 10px 14px;
+      border-bottom: 1px solid #ddd;
+      background: white;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    body.has-file header {
+      display: none;
+    }
+    #status {
+      color: #444;
+      font-size: 14px;
+    }
+    #viewerHost {
+      flex: 1;
+      min-height: 0;
+    }
+    button {
+      padding: 8px 12px;
+      border: 1px solid #bbb;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #f0f0f0;
+    }
+    #picker {
+      display: none;
+    }
+    .hint {
+      font-size: 13px;
+      color: #666;
+    }
+    .warn {
+      color: #9a4d00;
+    }
+  </style>
+
+  <script src="./vendor/grist-static/dist/csv-viewer.js"></script>
+</head>
+<body>
+  <header>
+    <strong>CSV Viewer (Grist)</strong>
+    <span id="status">In attesa di un CSV…</span>
+    <button id="openBtn" type="button">Apri CSV…</button>
+    <input id="picker" type="file" accept=".csv,text/csv">
+    <span class="hint">Doppio clic su un .csv oppure usa “Apri CSV…”.</span>
+  </header>
+
+  <div id="viewerHost"></div>
+
+  <script src="register-sw.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

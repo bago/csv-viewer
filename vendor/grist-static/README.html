@@ -1,0 +1,138 @@
+<h1 id="grist-static-grist-on-static-sites-without-embeds">grist-static: Grist on static sites without embeds</h1>
+<p>This is an experimental way to view and interact with <code>.grist</code> files (Grist spreadsheets) on regular websites, with no special back-end support needed. The idea here is that it would be great for making reports if we could put spreadsheets on a website like we do PDFs, with nice formatting and navigation options and not much fuss.</p>
+<p>If you <em>can</em> run a special back-end, <a href="https://github.com/gristlabs/grist-core">grist-core</a> is the most battle-tested way to host Grist spreadsheets. And for many purposes <a href="https://support.getgrist.com/embedding/">Grist embedding</a> may be adequate, where your embed a Grist spreadsheet from an external Grist installation (such as the hosted service offered by Grist Labs). But if you cannot host your data externally, and don’t want the operational burden of standing up a Grist installation of your own, <code>grist-static</code> gives you a way to easily render Grist spreadsheets on regular websites. Like a PDF, people will be able to view the spreadsheet, navigate around in it, and search within it. Better than a PDF, they’ll be able to change selections, and experiment with changing numbers to see what happens. Every viewer has their own copy, and their changes won’t be seen by others, or stored. This would also be a scalable way to show a Grist document to millions of simultaneous users.</p>
+<h2 id="see-an-example">See an example</h2>
+<p>https://gristlabs.github.io/grist-static shows a couple of example Grist documents hosted on GitHub Pages:</p>
+<p>https://user-images.githubusercontent.com/118367/227564527-82a9929c-40d3-4167-999f-6aeee4955723.mp4</p>
+<h2 id="serving-a-grist-document-on-a-static-website">Serving a Grist document on a static website</h2>
+<p>These days, PDFs can be placed on a website, and you can link to them with the expectation that browsers will show them nicely. Browsers don’t have native support for Grist [yet :-)] but you can make a little wrapper page like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="dt">&lt;!doctype </span>html<span class="dt">&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="kw">&lt;head&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">&quot;utf8&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>    <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://grist-static.com/latest.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>  <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  <span class="kw">&lt;body&gt;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>    <span class="kw">&lt;script&gt;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>      <span class="fu">bootstrapGrist</span>({</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>        <span class="dt">initialFile</span><span class="op">:</span> <span class="st">&#39;investment-research.grist&#39;</span><span class="op">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>        <span class="dt">name</span><span class="op">:</span> <span class="st">&#39;Investment Research&#39;</span><span class="op">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>      })<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>    <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>  <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<ul>
+<li>The code in this repository is available from https://grist-static.com/ as a CDN; you can produce it all yourself using this repo.</li>
+<li>After that, it is just a case of putting a <code>.grist</code> file on your server beside this <code>.html</code> file, and filing in the options to <code>bootstrapGrist</code>.</li>
+<li>You can also pass <code>initialData: 'path/to/data.csv'</code> to import a CSV file into a new table. In this case <code>initialFile</code> is optional.</li>
+<li>There is also <code>initialContent</code> option. You can use it to pass the content of a CSV file.</li>
+<li>You can also pass <code>elementId: 'element-id</code> to open Grist within an element in your page.
+<ul>
+<li>In that case, you can include a small wrapper page for your document as above, and embed it as an iframe yourself.</li>
+</ul></li>
+<li>You can set <code>singlePage: true</code> for a less busy, single page layout.</li>
+</ul>
+<h2 id="grist-csv-viewer">Grist CSV Viewer</h2>
+<p>Grist can handle data in multiple formats, including CSV. Since CSV is such a common format, and interacting with it online remains a chore, we’ve packaged <code>grist-static</code> into a streamlined <code>csv-viewer.js</code> utility specifically for viewing, sorting, filtering, any copy/pasting from CSV, directly in a webpage.</p>
+<p>Just add the viewer in the <code>head</code> area of a webpage:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;head&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://grist-static.com/csv-viewer.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">&lt;/head&gt;</span></span></code></pre></div>
+<p>Then you can make a button to open CSV from a URL:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> data-grist-csv-open=</span><span class="st">&quot;transactions.csv&quot;</span><span class="kw">&gt;</span>View CSV<span class="kw">&lt;/button&gt;</span></span></code></pre></div>
+<p>The CSV could be a file, or something your site generates for a user dynamically.</p>
+<p>If you are working with links rather than buttons, the same approach works:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">&lt;a</span><span class="ot"> data-grist-csv-open=</span><span class="st">&quot;transactions.csv&quot;</span><span class="ot"> href=</span><span class="st">&quot;#&quot;</span><span class="kw">&gt;</span>View CSV<span class="kw">&lt;/a&gt;</span></span></code></pre></div>
+<p>You can of course style the buttons and links as you wish.</p>
+<h2 id="grist-csv-viewer-as-a-web-component">Grist CSV Viewer as a web component</h2>
+<p>The CSV Viewer can also be used as a web component called <code>csv-viewer</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>  <span class="kw">&lt;head&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://grist-static.com/csv-viewer.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>  <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>  <span class="kw">&lt;body&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>    <span class="kw">&lt;csv-viewer</span><span class="ot"> initial-data=</span><span class="st">&quot;path/to/data.csv&quot;</span><span class="ot"> style=</span><span class="st">&quot;height: 500px; border: 1px solid green&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>    <span class="kw">&lt;/csv-viewer&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>  <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<p>The component in fact accepts the same set of options as the <code>bootstrapGrist</code> function, so you can configure it to show either a CSV file or (despite its name) a Grist document of your choice. Full list of options available:</p>
+<ul>
+<li><code>initial-file</code>: The initial Grist document to load.</li>
+<li><code>initial-data</code>: A CSV file to import.</li>
+<li><code>initial-content</code>: A content of a CSV file to import.</li>
+<li><code>name</code>: The name of the Grist document to use.</li>
+<li><code>single-page</code>: A boolean attribute that, when present, displays the document in a less busy, single page layout.</li>
+<li><code>loader</code>: A boolean attribute that, when present, displays a loading spinner while the document is loading.</li>
+</ul>
+<h2 id="more-viewer-options">More viewer options</h2>
+<p>We’ve seen that with <code>csv-viewer.js</code>, any element can be converted to a link that opens a popup with a CSV file. All you need to do is to add <code>data-grist-csv-open</code> attribute to it.</p>
+<p>There are other options available.</p>
+<ul>
+<li>Setting <code>data-grist-doc-open</code> allows opening a Grist document rather than a CSV (despite the utility’s name).</li>
+<li>Set <code>data-single-page</code> to <code>true</code> for a single page layout, or <code>false</code> for a multi-page layout.</li>
+<li>Use <code>data-name</code> to override the default document name shown in the multi-page layout.</li>
+<li>Use <code>data-loader</code> to show a loading spinner while the document is loading. This is enabled by default, pass <code>data-loader="false"</code> to disable it.</li>
+</ul>
+<p>There are also some predefined button classes, specifically <code>grist</code> and <code>grist-large</code>, that offer Grist’s default styling.</p>
+<p>For finer control, there is a global <code>previewInGrist</code> function with the same API as <code>bootstrapGrist</code>, but instead of rendering inline it opens a preview in a popup. This might be useful for any dynamically created content or a files that are not available at the time of page load.</p>
+<h2 id="differences-with-regular-grist">Differences with regular Grist</h2>
+<ul>
+<li>Changes aren’t stored.</li>
+<li>Changes are not shared with other viewers.</li>
+<li>No specific access control.</li>
+<li>Very immature, some features not yet ported, such as:
+<ul>
+<li>Attachments
+<ul>
+<li>Should be doable (e.g. via service worker)</li>
+</ul></li>
+<li>Importing and exporting
+<ul>
+<li>Again, doable, just “different”</li>
+</ul></li>
+<li>Data size measurement
+<ul>
+<li>A needed configuration option on compiling SQLite.</li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="tips-for-small-.grist-files">Tips for small .grist files</h2>
+<p>Grist spreadsheets by default store a lot of history in the <code>.grist</code> file. You can prune that history by building <code>grist-core</code> and then, in the <code>grist-core</code> directory, doing:</p>
+<pre><code>yarn run cli history prune PATH/TO/YOUR/doc.grist</code></pre>
+<p>Sorry this is awkward.</p>
+<h2 id="building-from-source">Building from source</h2>
+<pre><code>git submodule update --init
+make requirements
+make build
+make link
+python -m http.server 3030
+# now visit http://localhost:3030/page/index.html</code></pre>
+<p>The sequence above places a lot of links in the <code>page</code> directory, for convenience during development. To collect files for uploading, use instead:</p>
+<pre><code>make package
+# everything you need is in dist/static</code></pre>
+<h2 id="roadmap">Roadmap</h2>
+<p>It could be neat to make user changes persist in their browser - <a href="https://sqlite.org/wasm/doc/tip/persistence.md#opfs">OPFS</a> may be a good option for that, once it has broad browser support. Other steps:</p>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" checked="" />
+Get something that works on a webserver without special COOP/COEP headers.</li>
+<li><input type="checkbox" disabled="" />
+Start making versioned .zip releases of all needed assets.</li>
+<li><input type="checkbox" disabled="" checked="" />
+Get a few small tweaks to enable plugging in alternate storage and build steps landed upstream in <code>grist-core</code>.</li>
+<li><input type="checkbox" disabled="" />
+Support attachments - maybe serve as data URIs? Might need a service worker if separate URLs are unavoidable.</li>
+<li><input type="checkbox" disabled="" />
+Whittle down the code and clean up the demo now we know what we’re doing.</li>
+<li><input type="checkbox" disabled="" />
+Hide parts of UI that don’t make sense in this context.</li>
+<li><input type="checkbox" disabled="" />
+Consider switching to SQLite developers’ version of sqlite.js, which has good local storage support.</li>
+<li><input type="checkbox" disabled="" />
+Enable at least one export option (Download *.grist seems easiest).</li>
+<li><input type="checkbox" disabled="" />
+Enable at least one import option.</li>
+<li><input type="checkbox" disabled="" />
+Give a better way of pruning *.grist files.</li>
+<li><input type="checkbox" disabled="" />
+Currently, if a *.grist file is old relative to the code, and a migration needs to run, the “data engine” may end up on the critical path to showing the document (and that remains the case indefinitely since the result of migration cannot be stored). The data engine is relatively slow to start up, compared to the rest of the app, so this is sad. Look at ways around this.</li>
+</ul>
